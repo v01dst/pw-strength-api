@@ -61,7 +61,6 @@ export function strengthRoutes(app: FastifyInstance): void {
           },
           additionalProperties: false,
         },
-        response: { 400: errorResponse },
       },
     },
     async (request, reply) => {
