@@ -122,7 +122,16 @@ export function scorePassword(pw: string): StrengthResult {
   const low = pw.toLowerCase();
   const common = COMMON_PASSWORDS.has(low) || COMMON_PASSWORDS.has(low.replace(/\d+$/, ""));
 
+  const passphraseWords = pw.split(/[\s-_.]+/).filter((w) => w.length >= 3);
+  const isPassphrase = passphraseWords.length >= 4;
+
   let entropy = pw.length * Math.log2(Math.max(charsetSize(pw), 2));
+  if (isPassphrase) {
+    entropy = Math.max(
+      entropy,
+      passphraseWords.length * Math.log2(7776) + pw.length * 0.5
+    );
+  }
 
   const penalties: number[] = [];
   if (common) {
@@ -134,11 +143,11 @@ export function scorePassword(pw: string): StrengthResult {
     penalties.push(entropy * 0.3);
     suggestions.push("add letters and symbols");
   }
-  if (isKeyboardSequence(pw)) {
+  if (!isPassphrase && isKeyboardSequence(pw)) {
     penalties.push(entropy * 0.35);
     suggestions.push("avoid keyboard patterns like 'qwerty'");
   }
-  if (isSequence(pw)) {
+  if (!isPassphrase && isSequence(pw)) {
     penalties.push(entropy * 0.3);
     suggestions.push("avoid sequences like 'abcd' or '4321'");
   }

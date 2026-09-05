@@ -83,3 +83,15 @@ describe("scorePassword", () => {
     }
   });
 });
+
+describe("passphrase-aware scoring", () => {
+  it("scores word passphrases high despite sequence-ish words", () => {
+    const r = scorePassword("wind-river-mountain-thunder");
+    expect(r.score).toBeGreaterThanOrEqual(3);
+  });
+
+  it("long word passphrases reach very-strong", () => {
+    const r = scorePassword("copper lantern echoes beside the quiet harbor");
+    expect(r.score).toBe(4);
+  });
+});
